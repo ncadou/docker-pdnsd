@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+mkdir -p ${CONF}/conf.d ${CONF}/hosts.d
+touch ${CONF}/local.conf ${CONF}/hosts
+
+exec supervisord -c /etc/supervisor/supervisord.conf

@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+cd ${CONF}
+
+rebuild_conf() {
+    test -f pdnsd.conf && cat pdnsd.conf > /etc/pdnsd.conf
+    cat conf.d/* > local.conf
+    pdnsd-ctl config
+}
+
+rebuild_hosts() {
+    cat hosts.d/* > hosts
+    pdnsd-ctl source hosts localhost on
+}
+
+# Bootstrap-time build. Give some time for pdnsd to come up.
+test -f {pdnsd.conf,conf.d/*} || (sleep 5; rebuild_conf) &
+test -f hosts.d/* || (sleep 5; rebuild_hosts) &
+
+while inotifywait -q -e create -e modify -e move -e delete -r *
+do
+    sleep 1  # Give time for write ops to settle down a bit.
+    rebuild_conf
+    rebuild_hosts
+done

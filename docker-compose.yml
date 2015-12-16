@@ -1,0 +1,11 @@
+pdnsd:
+  image: ${IMAGE}
+  container_name: ${CONTAINER}
+  restart: unless-stopped
+  volumes:
+    - ${VOLUMES}/${CONTAINER}:/etc/pdnsd
+  ports:
+    - ${HOSTIP}:53:53/tcp
+    - ${HOSTIP}:53:53/udp
+  environment:
+    DNSDOCK_ALIAS: ${CONTAINER}.docker
